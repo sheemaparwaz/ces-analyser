@@ -34,7 +34,7 @@ import {
   PieChart,
   Pie,
   Cell,
-  ScatterPlot,
+  ScatterChart,
   Scatter,
 } from "recharts";
 import { mockTickets, mockPredictions, mockAnalytics } from "@/lib/mockData";
@@ -489,7 +489,7 @@ export default function Predictions() {
                 <CardContent>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <ScatterPlot>
+                      <ScatterChart data={confidenceData}>
                         <CartesianGrid
                           strokeDasharray="3 3"
                           className="opacity-30"
@@ -515,12 +515,8 @@ export default function Predictions() {
                               : "Predicted CES",
                           ]}
                         />
-                        <Scatter
-                          data={confidenceData}
-                          fill="#0ea5e9"
-                          fillOpacity={0.7}
-                        />
-                      </ScatterPlot>
+                        <Scatter fill="#0ea5e9" fillOpacity={0.7} />
+                      </ScatterChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>

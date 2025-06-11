@@ -36,7 +36,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ScatterPlot,
+  ScatterChart,
   Scatter,
   BarChart,
   Bar,
@@ -402,7 +402,7 @@ export default function Analysis() {
               <CardContent>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
-                    <ScatterPlot>
+                    <ScatterChart data={correlationData}>
                       <CartesianGrid
                         strokeDasharray="3 3"
                         className="opacity-30"
@@ -434,12 +434,8 @@ export default function Analysis() {
                           name === "ces_score" ? "CES Score" : "Priority",
                         ]}
                       />
-                      <Scatter
-                        data={correlationData}
-                        fill="#0ea5e9"
-                        fillOpacity={0.7}
-                      />
-                    </ScatterPlot>
+                      <Scatter fill="#0ea5e9" fillOpacity={0.7} />
+                    </ScatterChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
