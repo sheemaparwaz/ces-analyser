@@ -2,10 +2,10 @@ import { ZendeskTicket, CESAnalytics, DashboardStats } from "@/types";
 
 // Zendesk API configuration
 const ZENDESK_CONFIG = {
-  subdomain: process.env.VITE_ZENDESK_SUBDOMAIN || "", // e.g., 'yourcompany'
-  email: process.env.VITE_ZENDESK_EMAIL || "",
+  subdomain: import.meta.env.VITE_ZENDESK_SUBDOMAIN || "", // e.g., 'yourcompany'
+  email: import.meta.env.VITE_ZENDESK_EMAIL || "",
   token:
-    process.env.VITE_ZENDESK_TOKEN ||
+    import.meta.env.VITE_ZENDESK_TOKEN ||
     "rr6vo0JeEn867MXTgT9f1UvByuWzCxf76YTrjeRA",
 };
 
