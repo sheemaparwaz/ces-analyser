@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ZendeskSettings } from "@/components/ZendeskSettings";
 import {
   BarChart3,
   Brain,
@@ -138,9 +139,7 @@ export function Layout({ children }: LayoutProps) {
             <Button variant="ghost" size="sm">
               <Bell className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm">
-              <Settings className="h-4 w-4" />
-            </Button>
+            <ZendeskSettings />
             <Button variant="ghost" size="sm">
               <User className="h-4 w-4" />
             </Button>
