@@ -76,15 +76,15 @@ export default function Analysis() {
 
   const getCESColor = (score?: number) => {
     if (!score) return "text-slate-400";
-    if (score <= 2) return "text-success-600";
-    if (score <= 4) return "text-warning-600";
+    if (score >= 6) return "text-success-600";
+    if (score >= 4) return "text-warning-600";
     return "text-danger-600";
   };
 
   const getCESBadgeVariant = (score?: number) => {
     if (!score) return "outline";
-    if (score <= 2) return "default";
-    if (score <= 4) return "secondary";
+    if (score >= 6) return "default";
+    if (score >= 4) return "secondary";
     return "destructive";
   };
 

@@ -102,7 +102,7 @@ export function Layout({ children }: LayoutProps) {
                 <Target className="h-4 w-4" />
                 <div className="text-xs">
                   <p className="font-medium">CES Target</p>
-                  <p className="text-ces-600 dark:text-ces-400">Score ≤ 3.0</p>
+                  <p className="text-ces-600 dark:text-ces-400">Score ≥ 4.0</p>
                 </div>
               </div>
             </Card>

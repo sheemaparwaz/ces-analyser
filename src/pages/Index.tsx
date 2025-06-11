@@ -121,7 +121,7 @@ export default function Index() {
               </Badge>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Target: ≤ 3.0 (Good progress!)
+              Target: ≥ 4.0 (Good progress!)
             </p>
           </CardContent>
         </Card>
@@ -401,9 +401,9 @@ export default function Index() {
                       <p className="text-sm text-slate-500">CES Score</p>
                       <p
                         className={`font-bold ${
-                          ticket.ces_score <= 2
+                          ticket.ces_score >= 6
                             ? "text-success-600"
-                            : ticket.ces_score <= 4
+                            : ticket.ces_score >= 4
                               ? "text-warning-600"
                               : "text-danger-600"
                         }`}

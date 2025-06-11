@@ -69,9 +69,9 @@ export default function Predictions() {
   );
 
   const riskDistribution = [
-    { name: "Low Risk (0-2)", value: 142, color: "#22c55e" },
-    { name: "Medium Risk (3-4)", value: 89, color: "#f59e0b" },
-    { name: "High Risk (5-7)", value: 127, color: "#ef4444" },
+    { name: "High Risk (0-3)", value: 127, color: "#ef4444" },
+    { name: "Medium Risk (4-5)", value: 89, color: "#f59e0b" },
+    { name: "Low Risk (6-7)", value: 142, color: "#22c55e" },
   ];
 
   const confidenceData = mockPredictions.map((pred) => ({
@@ -153,7 +153,7 @@ export default function Predictions() {
               {pendingTickets.length}
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Tickets without CES scores
+              CES score ≤ 3 predicted
             </p>
           </CardContent>
         </Card>
@@ -357,9 +357,9 @@ export default function Predictions() {
                               </h3>
                               <Badge
                                 variant={
-                                  prediction.predicted_score <= 2
+                                  prediction.predicted_score >= 6
                                     ? "default"
-                                    : prediction.predicted_score <= 4
+                                    : prediction.predicted_score >= 4
                                       ? "secondary"
                                       : "destructive"
                                 }
