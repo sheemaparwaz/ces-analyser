@@ -194,325 +194,130 @@ export default function Analysis() {
         </CardContent>
       </Card>
 
+      {/* Main content with right-side tabs */}
       <div className="flex gap-6">
-        {/* Main content area */}
         <div className="flex-1">
-          <Tabs defaultValue="table" orientation="vertical" className="flex gap-6">
+          <Tabs
+            defaultValue="table"
+            orientation="vertical"
+            className="flex gap-6"
+          >
             <div className="flex-1">
               <TabsContent value="table" className="mt-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>Ticket Details</CardTitle>
-              <CardDescription>
-                Comprehensive view of all tickets with CES scores and metadata
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {sortedTickets.map((ticket) => (
-                  <div
-                    key={ticket.id}
-                    className="flex flex-col space-y-3 p-6 rounded-lg border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-center space-x-3">
-                          <Badge variant="outline">#{ticket.id}</Badge>
-                          <h3 className="font-semibold text-lg">
-                            {ticket.subject}
-                          </h3>
-                          {ticket.ces_score !== undefined && (
-                            <Badge
-                              variant={getCESBadgeVariant(ticket.ces_score)}
-                            >
-                              CES: {ticket.ces_score}/7
-                            </Badge>
-                          )}
-                        </div>
-                        <p className="text-slate-600 dark:text-slate-300 line-clamp-2">
-                          {ticket.description}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                          <div className="flex items-center space-x-1">
-                            <Users className="h-4 w-4" />
-                            <span>{ticket.requester.name}</span>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Ticket Details</CardTitle>
+                    <CardDescription>
+                      Comprehensive view of all tickets with CES scores and
+                      metadata
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {sortedTickets.map((ticket) => (
+                        <div
+                          key={ticket.id}
+                          className="flex flex-col space-y-3 p-6 rounded-lg border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 space-y-2">
+                              <div className="flex items-center space-x-3">
+                                <Badge variant="outline">#{ticket.id}</Badge>
+                                <h3 className="font-semibold text-lg">
+                                  {ticket.subject}
+                                </h3>
+                                {ticket.ces_score !== undefined && (
+                                  <Badge
+                                    variant={getCESBadgeVariant(
+                                      ticket.ces_score,
+                                    )}
+                                  >
+                                    CES: {ticket.ces_score}/7
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-slate-600 dark:text-slate-300 line-clamp-2">
+                                {ticket.description}
+                              </p>
+                              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                                <div className="flex items-center space-x-1">
+                                  <Users className="h-4 w-4" />
+                                  <span>{ticket.requester.name}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <MessageSquare className="h-4 w-4" />
+                                  <span className="capitalize">
+                                    {ticket.channel}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <Clock className="h-4 w-4" />
+                                  <span>
+                                    {new Date(
+                                      ticket.created_at,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                {ticket.assignee && (
+                                  <div>
+                                    <span>
+                                      Assigned to: {ticket.assignee.name}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end space-y-2">
+                              <Badge
+                                variant={
+                                  ticket.status === "solved"
+                                    ? "default"
+                                    : ticket.status === "open"
+                                      ? "secondary"
+                                      : ticket.status === "pending"
+                                        ? "outline"
+                                        : ticket.status === "new"
+                                          ? "destructive"
+                                          : "default"
+                                }
+                                className="capitalize"
+                              >
+                                {ticket.status}
+                              </Badge>
+                              <Badge
+                                variant={
+                                  ticket.priority === "urgent"
+                                    ? "destructive"
+                                    : ticket.priority === "high"
+                                      ? "default"
+                                      : ticket.priority === "normal"
+                                        ? "secondary"
+                                        : "outline"
+                                }
+                                className="capitalize"
+                              >
+                                {ticket.priority}
+                              </Badge>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <MessageSquare className="h-4 w-4" />
-                            <span className="capitalize">{ticket.channel}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>
-                              {new Date(ticket.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                          {ticket.assignee && (
-                            <div>
-                              <span>Assigned to: {ticket.assignee.name}</span>
+                          {ticket.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                              {ticket.tags.map((tag) => (
+                                <Badge
+                                  key={tag}
+                                  variant="outline"
+                                  className="text-xs"
+                                >
+                                  {tag}
+                                </Badge>
+                              ))}
                             </div>
                           )}
                         </div>
-                      </div>
-                      <div className="flex flex-col items-end space-y-2">
-                        <Badge
-                          variant={
-                            ticket.status === "solved"
-                              ? "default"
-                              : ticket.status === "open"
-                                ? "secondary"
-                                : ticket.status === "pending"
-                                  ? "outline"
-                                  : ticket.status === "new"
-                                    ? "destructive"
-                                    : "default"
-                          }
-                          className="capitalize"
-                        >
-                          {ticket.status}
-                        </Badge>
-                        <Badge
-                          variant={
-                            ticket.priority === "urgent"
-                              ? "destructive"
-                              : ticket.priority === "high"
-                                ? "default"
-                                : ticket.priority === "normal"
-                                  ? "secondary"
-                                  : "outline"
-                          }
-                          className="capitalize"
-                        >
-                          {ticket.priority}
-                        </Badge>
-                      </div>
+                      ))}
                     </div>
-                    {ticket.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-                        {ticket.tags.map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="outline"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="analytics">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>CES Trends Over Time</CardTitle>
-                <CardDescription>
-                  Daily average CES scores showing patterns and improvements
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={mockAnalytics.trends}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        className="opacity-30"
-                      />
-                      <XAxis
-                        dataKey="date"
-                        tickFormatter={(value) =>
-                          new Date(value).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })
-                        }
-                        className="text-xs"
-                      />
-                      <YAxis domain={[0, 7]} className="text-xs" />
-                      <Tooltip
-                        labelFormatter={(value) =>
-                          new Date(value).toLocaleDateString()
-                        }
-                        formatter={(value: any) => [value, "Average CES"]}
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="average_ces"
-                        stroke="#0ea5e9"
-                        strokeWidth={3}
-                        dot={{ fill: "#0ea5e9", strokeWidth: 2, r: 4 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Channel Performance</CardTitle>
-                <CardDescription>
-                  Average CES scores by support channel
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={mockAnalytics.by_channel}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        className="opacity-30"
-                      />
-                      <XAxis dataKey="channel" className="text-xs" />
-                      <YAxis domain={[0, 7]} className="text-xs" />
-                      <Tooltip
-                        formatter={(value: any) => [value, "Average CES"]}
-                      />
-                      <Bar
-                        dataKey="average_ces"
-                        fill="#0ea5e9"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="correlations">
-          <div className="grid gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Priority vs CES Score Correlation</CardTitle>
-                <CardDescription>
-                  Relationship between ticket priority and customer effort
-                  scores
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ScatterChart data={correlationData}>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        className="opacity-30"
-                      />
-                      <XAxis
-                        type="number"
-                        dataKey="priority"
-                        domain={[0.5, 4.5]}
-                        tickFormatter={(value) =>
-                          value === 1
-                            ? "Low"
-                            : value === 2
-                              ? "Normal"
-                              : value === 3
-                                ? "High"
-                                : "Urgent"
-                        }
-                        className="text-xs"
-                      />
-                      <YAxis
-                        type="number"
-                        dataKey="ces_score"
-                        domain={[0, 7]}
-                        className="text-xs"
-                      />
-                      <Tooltip
-                        formatter={(value: any, name: string) => [
-                          name === "ces_score" ? `${value}/7` : value,
-                          name === "ces_score" ? "CES Score" : "Priority",
-                        ]}
-                      />
-                      <Scatter fill="#0ea5e9" fillOpacity={0.7} />
-                    </ScatterChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Key Insights</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-success-50 dark:bg-success-900/20">
-                      <TrendingDown className="h-5 w-5 text-success-600" />
-                      <div>
-                        <p className="font-medium text-success-800 dark:text-success-200">
-                          CES Improvement
-                        </p>
-                        <p className="text-sm text-success-600 dark:text-success-400">
-                          15% decrease in average CES over last month
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-warning-50 dark:bg-warning-900/20">
-                      <TrendingUp className="h-5 w-5 text-warning-600" />
-                      <div>
-                        <p className="font-medium text-warning-800 dark:text-warning-200">
-                          Phone Channel Alert
-                        </p>
-                        <p className="text-sm text-warning-600 dark:text-warning-400">
-                          Highest CES scores observed in phone support
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 rounded-lg bg-ces-50 dark:bg-ces-900/20">
-                      <BarChart3 className="h-5 w-5 text-ces-600" />
-                      <div>
-                        <p className="font-medium text-ces-800 dark:text-ces-200">
-                          Strong Correlation
-                        </p>
-                        <p className="text-sm text-ces-600 dark:text-ces-400">
-                          Higher priority tickets show increased effort scores
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recommendations</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <h4 className="font-medium">Focus on Phone Support</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                        Implement additional training for phone agents to reduce
-                        CES scores
-                      </p>
-                    </div>
-                    <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <h4 className="font-medium">Urgent Ticket Workflow</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                        Streamline processes for urgent tickets to minimize
-                        customer effort
-                      </p>
-                    </div>
-                    <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <h4 className="font-medium">Self-Service Options</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                        Expand knowledge base to reduce ticket volume for common
-                        issues
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="analytics" className="mt-0">
@@ -521,7 +326,8 @@ export default function Analysis() {
                     <CardHeader>
                       <CardTitle>CES Trends Over Time</CardTitle>
                       <CardDescription>
-                        Daily average CES scores showing patterns and improvements
+                        Daily average CES scores showing patterns and
+                        improvements
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -640,10 +446,7 @@ export default function Analysis() {
                                 name === "ces_score" ? "CES Score" : "Priority",
                               ]}
                             />
-                            <Scatter
-                              fill="#0ea5e9"
-                              fillOpacity={0.7}
-                            />
+                            <Scatter fill="#0ea5e9" fillOpacity={0.7} />
                           </ScatterChart>
                         </ResponsiveContainer>
                       </div>
@@ -686,7 +489,8 @@ export default function Analysis() {
                                 Strong Correlation
                               </p>
                               <p className="text-sm text-ces-600 dark:text-ces-400">
-                                Higher priority tickets show decreased CES scores
+                                Higher priority tickets show decreased CES
+                                scores
                               </p>
                             </div>
                           </div>
@@ -701,24 +505,30 @@ export default function Analysis() {
                       <CardContent>
                         <div className="space-y-4">
                           <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                            <h4 className="font-medium">Focus on Phone Support</h4>
+                            <h4 className="font-medium">
+                              Focus on Phone Support
+                            </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                              Implement additional training for phone agents to improve
-                              CES scores
+                              Implement additional training for phone agents to
+                              improve CES scores
                             </p>
                           </div>
                           <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                            <h4 className="font-medium">Urgent Ticket Workflow</h4>
+                            <h4 className="font-medium">
+                              Urgent Ticket Workflow
+                            </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                               Streamline processes for urgent tickets to improve
                               customer experience
                             </p>
                           </div>
                           <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                            <h4 className="font-medium">Self-Service Options</h4>
+                            <h4 className="font-medium">
+                              Self-Service Options
+                            </h4>
                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                              Expand knowledge base to reduce ticket volume for common
-                              issues
+                              Expand knowledge base to reduce ticket volume for
+                              common issues
                             </p>
                           </div>
                         </div>
@@ -771,7 +581,11 @@ export default function Analysis() {
                 <Card className="p-4 bg-success-50 dark:bg-success-900/20 border-success-200 dark:border-success-700">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-success-600">
-                      {sortedTickets.filter(t => t.ces_score && t.ces_score >= 6).length}
+                      {
+                        sortedTickets.filter(
+                          (t) => t.ces_score && t.ces_score >= 6,
+                        ).length
+                      }
                     </div>
                     <div className="text-sm text-success-700 dark:text-success-300">
                       High CES (6-7)
@@ -782,7 +596,11 @@ export default function Analysis() {
                 <Card className="p-4 bg-danger-50 dark:bg-danger-900/20 border-danger-200 dark:border-danger-700">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-danger-600">
-                      {sortedTickets.filter(t => t.ces_score && t.ces_score <= 3).length}
+                      {
+                        sortedTickets.filter(
+                          (t) => t.ces_score && t.ces_score <= 3,
+                        ).length
+                      }
                     </div>
                     <div className="text-sm text-danger-700 dark:text-danger-300">
                       Low CES (0-3)
