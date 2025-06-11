@@ -221,7 +221,6 @@ export const mockAnalytics: CESAnalytics = {
     { priority: "low", average_ces: 5.8, count: 234 },
     { priority: "normal", average_ces: 4.9, count: 445 },
     { priority: "high", average_ces: 4.1, count: 167 },
-    { priority: "urgent", average_ces: 2.8, count: 46 },
   ],
 };
 

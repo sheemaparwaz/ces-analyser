@@ -242,54 +242,8 @@ export default function Index() {
         </Card>
       </div>
 
-      {/* Channel and Priority Analysis */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* By Channel */}
-        <Card>
-          <CardHeader>
-            <CardTitle>CES by Channel</CardTitle>
-            <CardDescription>
-              Average effort scores across different support channels
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {analytics.by_channel.map((channel, index) => (
-                <div
-                  key={channel.channel}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    />
-                    <div>
-                      <p className="font-medium capitalize">
-                        {channel.channel}
-                      </p>
-                      <p className="text-sm text-slate-500">
-                        {channel.count} tickets
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">
-                      {channel.average_ces.toFixed(1)}
-                    </p>
-                    <div className="w-20">
-                      <Progress
-                        value={(channel.average_ces / 7) * 100}
-                        className="h-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
+      {/* Priority Analysis */}
+      <div className="max-w-md">
         {/* By Priority */}
         <Card>
           <CardHeader>
@@ -300,45 +254,47 @@ export default function Index() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {analytics.by_priority.map((priority, index) => (
-                <div
-                  key={priority.priority}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Badge
-                      variant={
-                        priority.priority === "urgent"
-                          ? "destructive"
-                          : priority.priority === "high"
-                            ? "default"
-                            : priority.priority === "normal"
-                              ? "secondary"
-                              : "outline"
-                      }
-                      className="w-16 justify-center"
-                    >
-                      {priority.priority}
-                    </Badge>
-                    <div>
-                      <p className="text-sm text-slate-500">
-                        {priority.count} tickets
+              {analytics.by_priority
+                .filter((p) => p.priority !== "urgent")
+                .map((priority, index) => (
+                  <div
+                    key={priority.priority}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Badge
+                        variant={
+                          priority.priority === "urgent"
+                            ? "destructive"
+                            : priority.priority === "high"
+                              ? "default"
+                              : priority.priority === "normal"
+                                ? "secondary"
+                                : "outline"
+                        }
+                        className="w-16 justify-center"
+                      >
+                        {priority.priority}
+                      </Badge>
+                      <div>
+                        <p className="text-sm text-slate-500">
+                          {priority.count} tickets
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold">
+                        {priority.average_ces.toFixed(1)}
                       </p>
+                      <div className="w-20">
+                        <Progress
+                          value={(priority.average_ces / 7) * 100}
+                          className="h-2"
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold">
-                      {priority.average_ces.toFixed(1)}
-                    </p>
-                    <div className="w-20">
-                      <Progress
-                        value={(priority.average_ces / 7) * 100}
-                        className="h-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </CardContent>
         </Card>
