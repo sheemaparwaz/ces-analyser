@@ -103,42 +103,34 @@ const transformZendeskTicket = (
 };
 
 export class ZendeskApiService {
-  private cesFieldId?: number;
+  private cesFieldId: number =
+    Number(import.meta.env.VITE_ZENDESK_CES_FIELD_ID) || 31797439524887; // CES field ID for Builder.io Zendesk
 
   async initialize() {
-    // Find the CES score custom field
+    // CES field ID is already configured
+    console.log(`Using CES field ID: ${this.cesFieldId}`);
+
+    // Optionally verify the field exists and get its details
     try {
       const response = await fetch(
-        `${getZendeskBaseUrl()}/ticket_fields.json`,
+        `${getZendeskBaseUrl()}/ticket_fields/${this.cesFieldId}.json`,
         {
           headers: getAuthHeaders(),
         },
       );
 
-      if (!response.ok) {
-        throw new Error(
-          `Failed to fetch ticket fields: ${response.statusText}`,
+      if (response.ok) {
+        const data = await response.json();
+        console.log(
+          `CES field verified: ${data.ticket_field.title} (ID: ${data.ticket_field.id})`,
         );
-      }
-
-      const data = await response.json();
-      const cesField = data.ticket_fields.find(
-        (field: any) =>
-          field.title.toLowerCase().includes("ces") ||
-          field.title.toLowerCase().includes("customer effort") ||
-          field.title.toLowerCase().includes("effort score"),
-      );
-
-      if (cesField) {
-        this.cesFieldId = cesField.id;
-        console.log(`Found CES field: ${cesField.title} (ID: ${cesField.id})`);
       } else {
         console.warn(
-          "CES score field not found. Please ensure you have a custom field for CES scores.",
+          `CES field ${this.cesFieldId} not found or not accessible`,
         );
       }
     } catch (error) {
-      console.error("Error finding CES field:", error);
+      console.error("Error verifying CES field:", error);
     }
   }
 
@@ -287,7 +279,7 @@ export class ZendeskApiService {
 
   async updateTicketCES(ticketId: string, cesScore: number): Promise<boolean> {
     if (!this.cesFieldId) {
-      throw new Error("CES field not found. Cannot update CES score.");
+      throw new Error("CES field ID not configured. Cannot update CES score.");
     }
 
     try {
