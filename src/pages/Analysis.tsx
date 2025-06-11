@@ -194,14 +194,12 @@ export default function Analysis() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="table" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="table">Ticket List</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="correlations">Correlations</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="table">
+      <div className="flex gap-6">
+        {/* Main content area */}
+        <div className="flex-1">
+          <Tabs defaultValue="table" orientation="vertical" className="flex gap-6">
+            <div className="flex-1">
+              <TabsContent value="table" className="mt-0">
           <Card>
             <CardHeader>
               <CardTitle>Ticket Details</CardTitle>
@@ -515,10 +513,287 @@ export default function Analysis() {
                   </div>
                 </CardContent>
               </Card>
+              </TabsContent>
+
+              <TabsContent value="analytics" className="mt-0">
+                <div className="grid gap-6 lg:grid-cols-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>CES Trends Over Time</CardTitle>
+                      <CardDescription>
+                        Daily average CES scores showing patterns and improvements
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={mockAnalytics.trends}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              className="opacity-30"
+                            />
+                            <XAxis
+                              dataKey="date"
+                              tickFormatter={(value) =>
+                                new Date(value).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                })
+                              }
+                              className="text-xs"
+                            />
+                            <YAxis domain={[0, 7]} className="text-xs" />
+                            <Tooltip
+                              labelFormatter={(value) =>
+                                new Date(value).toLocaleDateString()
+                              }
+                              formatter={(value: any) => [value, "Average CES"]}
+                            />
+                            <Line
+                              type="monotone"
+                              dataKey="average_ces"
+                              stroke="#0ea5e9"
+                              strokeWidth={3}
+                              dot={{ fill: "#0ea5e9", strokeWidth: 2, r: 4 }}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Channel Performance</CardTitle>
+                      <CardDescription>
+                        Average CES scores by support channel
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={mockAnalytics.by_channel}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              className="opacity-30"
+                            />
+                            <XAxis dataKey="channel" className="text-xs" />
+                            <YAxis domain={[0, 7]} className="text-xs" />
+                            <Tooltip
+                              formatter={(value: any) => [value, "Average CES"]}
+                            />
+                            <Bar
+                              dataKey="average_ces"
+                              fill="#0ea5e9"
+                              radius={[4, 4, 0, 0]}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="correlations" className="mt-0">
+                <div className="grid gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Priority vs CES Score Correlation</CardTitle>
+                      <CardDescription>
+                        Relationship between ticket priority and customer effort
+                        scores
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <ScatterChart data={correlationData}>
+                            <CartesianGrid
+                              strokeDasharray="3 3"
+                              className="opacity-30"
+                            />
+                            <XAxis
+                              type="number"
+                              dataKey="priority"
+                              domain={[0.5, 4.5]}
+                              tickFormatter={(value) =>
+                                value === 1
+                                  ? "Low"
+                                  : value === 2
+                                    ? "Normal"
+                                    : value === 3
+                                      ? "High"
+                                      : "Urgent"
+                              }
+                              className="text-xs"
+                            />
+                            <YAxis
+                              type="number"
+                              dataKey="ces_score"
+                              domain={[0, 7]}
+                              className="text-xs"
+                            />
+                            <Tooltip
+                              formatter={(value: any, name: string) => [
+                                name === "ces_score" ? `${value}/7` : value,
+                                name === "ces_score" ? "CES Score" : "Priority",
+                              ]}
+                            />
+                            <Scatter
+                              fill="#0ea5e9"
+                              fillOpacity={0.7}
+                            />
+                          </ScatterChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Key Insights</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="flex items-center space-x-3 p-3 rounded-lg bg-success-50 dark:bg-success-900/20">
+                            <TrendingUp className="h-5 w-5 text-success-600" />
+                            <div>
+                              <p className="font-medium text-success-800 dark:text-success-200">
+                                CES Improvement
+                              </p>
+                              <p className="text-sm text-success-600 dark:text-success-400">
+                                15% increase in average CES over last month
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 rounded-lg bg-warning-50 dark:bg-warning-900/20">
+                            <TrendingDown className="h-5 w-5 text-warning-600" />
+                            <div>
+                              <p className="font-medium text-warning-800 dark:text-warning-200">
+                                Phone Channel Alert
+                              </p>
+                              <p className="text-sm text-warning-600 dark:text-warning-400">
+                                Lowest CES scores observed in phone support
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 rounded-lg bg-ces-50 dark:bg-ces-900/20">
+                            <BarChart3 className="h-5 w-5 text-ces-600" />
+                            <div>
+                              <p className="font-medium text-ces-800 dark:text-ces-200">
+                                Strong Correlation
+                              </p>
+                              <p className="text-sm text-ces-600 dark:text-ces-400">
+                                Higher priority tickets show decreased CES scores
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Recommendations</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <h4 className="font-medium">Focus on Phone Support</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                              Implement additional training for phone agents to improve
+                              CES scores
+                            </p>
+                          </div>
+                          <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <h4 className="font-medium">Urgent Ticket Workflow</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                              Streamline processes for urgent tickets to improve
+                              customer experience
+                            </p>
+                          </div>
+                          <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                            <h4 className="font-medium">Self-Service Options</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                              Expand knowledge base to reduce ticket volume for common
+                              issues
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
             </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+
+            {/* Vertical tabs on the right */}
+            <div className="w-64 flex-shrink-0">
+              <TabsList className="flex flex-col h-auto w-full space-y-2 bg-transparent p-1">
+                <TabsTrigger
+                  value="table"
+                  className="w-full justify-start data-[state=active]:bg-ces-500 data-[state=active]:text-white"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Ticket List
+                </TabsTrigger>
+                <TabsTrigger
+                  value="analytics"
+                  className="w-full justify-start data-[state=active]:bg-ces-500 data-[state=active]:text-white"
+                >
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger
+                  value="correlations"
+                  className="w-full justify-start data-[state=active]:bg-ces-500 data-[state=active]:text-white"
+                >
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  Correlations
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Tab information panels */}
+              <div className="mt-6 space-y-4">
+                <Card className="p-4 bg-ces-50 dark:bg-ces-900/20 border-ces-200 dark:border-ces-700">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-ces-600">
+                      {sortedTickets.length}
+                    </div>
+                    <div className="text-sm text-ces-700 dark:text-ces-300">
+                      Tickets Found
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-success-50 dark:bg-success-900/20 border-success-200 dark:border-success-700">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-success-600">
+                      {sortedTickets.filter(t => t.ces_score && t.ces_score >= 6).length}
+                    </div>
+                    <div className="text-sm text-success-700 dark:text-success-300">
+                      High CES (6-7)
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-danger-50 dark:bg-danger-900/20 border-danger-200 dark:border-danger-700">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-danger-600">
+                      {sortedTickets.filter(t => t.ces_score && t.ces_score <= 3).length}
+                    </div>
+                    <div className="text-sm text-danger-700 dark:text-danger-300">
+                      Low CES (0-3)
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </Tabs>
+        </div>
+      </div>
     </div>
   );
 }
