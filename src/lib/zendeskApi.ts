@@ -497,6 +497,19 @@ export class ZendeskApiService {
   // Test connection to Zendesk
   async testConnection(): Promise<{ success: boolean; message: string }> {
     try {
+      // Check if we have all required configuration
+      if (
+        !ZENDESK_CONFIG.subdomain ||
+        !ZENDESK_CONFIG.email ||
+        !ZENDESK_CONFIG.token
+      ) {
+        return {
+          success: false,
+          message:
+            "Zendesk configuration incomplete. Please check subdomain, email, and token.",
+        };
+      }
+
       const response = await fetch(
         `${getZendeskBaseUrl()}/tickets.json?per_page=1`,
         {
@@ -516,6 +529,15 @@ export class ZendeskApiService {
         };
       }
     } catch (error) {
+      // Handle CORS errors specifically
+      if (error instanceof TypeError && error.message.includes("fetch")) {
+        return {
+          success: false,
+          message:
+            "CORS Error: Direct browser access to Zendesk API is blocked. Please use a backend proxy server or serverless function.",
+        };
+      }
+
       return {
         success: false,
         message: `Connection error: ${error instanceof Error ? error.message : "Unknown error"}`,

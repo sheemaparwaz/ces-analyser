@@ -101,9 +101,13 @@ export function ZendeskSettings() {
                       ? "Testing connection..."
                       : isConnected
                         ? "Connected to Zendesk"
-                        : "Not connected"}
+                        : "CORS Blocked - Need Backend Proxy"}
                   </p>
-                  <p className="text-sm text-slate-500">{connectionMessage}</p>
+                  <p className="text-sm text-slate-500">
+                    {isConnected
+                      ? connectionMessage
+                      : "Direct browser access blocked. See ZENDESK_INTEGRATION.md"}
+                  </p>
                 </div>
               </div>
               <Badge variant={isConnected ? "default" : "destructive"}>
@@ -204,9 +208,18 @@ export function ZendeskSettings() {
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Important:</strong> Make sure you have a custom field in
-                Zendesk for CES scores. The field title should include "CES",
-                "Customer Effort", or "Effort Score" for automatic detection.
+                <strong>CORS Issue:</strong> Direct browser access to Zendesk
+                API is blocked by CORS policy. You need a backend proxy server
+                or serverless function to connect. See ZENDESK_INTEGRATION.md
+                for solutions.
+              </AlertDescription>
+            </Alert>
+
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>CES Field:</strong> Make sure you have a custom field in
+                Zendesk for CES scores (ID: 31797439524887 configured).
               </AlertDescription>
             </Alert>
           </div>
