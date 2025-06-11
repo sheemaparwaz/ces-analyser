@@ -2,8 +2,8 @@ import { ZendeskTicket, CESAnalytics, DashboardStats } from "@/types";
 
 // Zendesk API configuration
 const ZENDESK_CONFIG = {
-  subdomain: import.meta.env.VITE_ZENDESK_SUBDOMAIN || "", // e.g., 'yourcompany'
-  email: import.meta.env.VITE_ZENDESK_EMAIL || "",
+  subdomain: import.meta.env.VITE_ZENDESK_SUBDOMAIN || "builderio", // e.g., 'yourcompany'
+  email: import.meta.env.VITE_ZENDESK_EMAIL || "sheema@builder.io",
   token:
     import.meta.env.VITE_ZENDESK_TOKEN ||
     "rr6vo0JeEn867MXTgT9f1UvByuWzCxf76YTrjeRA",
