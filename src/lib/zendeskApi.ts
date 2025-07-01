@@ -529,12 +529,25 @@ export class ZendeskApiService {
         };
       }
     } catch (error) {
-      // Handle CORS errors specifically
-      if (error instanceof TypeError && error.message.includes("fetch")) {
+      // Handle different types of errors gracefully
+      if (
+        error instanceof TypeError &&
+        (error.message.includes("fetch") ||
+          error.message.includes("Failed to fetch") ||
+          error.message.includes("NetworkError"))
+      ) {
         return {
           success: false,
           message:
-            "CORS Error: Direct browser access to Zendesk API is blocked. Please use a backend proxy server or serverless function.",
+            "CORS Blocked: This is expected! Direct browser access to Zendesk API is blocked for security. Your credentials are correct - use demo data or set up a backend proxy.",
+        };
+      }
+
+      if (error instanceof Error && error.name === "AbortError") {
+        return {
+          success: false,
+          message:
+            "Connection timeout: Request took too long. This might be due to CORS restrictions.",
         };
       }
 
