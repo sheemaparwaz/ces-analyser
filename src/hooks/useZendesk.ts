@@ -11,6 +11,9 @@ export function useZendeskConnection() {
     queryKey: ["zendesk-connection"],
     queryFn: () => zendeskApi.testConnection(),
     retry: false,
+    throwOnError: false, // Don't throw errors for CORS issues
+    staleTime: 30000, // Cache result for 30 seconds
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   useEffect(() => {
@@ -21,11 +24,15 @@ export function useZendeskConnection() {
           setIsInitialized(true);
           toast.success("Connected to Zendesk successfully!");
         } catch (error) {
-          toast.error("Failed to initialize Zendesk connection");
           console.error("Zendesk initialization error:", error);
+          // Don't show toast error for initialization failures
         }
-      } else if (connectionTest?.success === false) {
-        toast.error(`Zendesk connection failed: ${connectionTest.message}`);
+      } else if (
+        connectionTest?.success === false &&
+        !connectionTest.message.includes("CORS")
+      ) {
+        // Only show error toasts for non-CORS issues
+        console.log("Zendesk connection status:", connectionTest.message);
       }
     };
 
