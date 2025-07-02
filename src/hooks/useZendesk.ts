@@ -1,19 +1,33 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { zendeskApi } from "@/lib/zendeskApi";
+import { zendeskApiLive } from "@/lib/zendeskApiLive";
 import { ZendeskTicket, CESAnalytics, DashboardStats } from "@/types";
 import { toast } from "sonner";
 
 export function useZendeskConnection() {
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLiveConnection, setIsLiveConnection] = useState(false);
 
+  // Test live connection via Vercel proxy first
+  const { data: liveConnectionTest, isLoading: isTestingLive } = useQuery({
+    queryKey: ["zendesk-live-connection"],
+    queryFn: () => zendeskApiLive.testConnection(),
+    retry: 1,
+    throwOnError: false,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+  });
+
+  // Fallback to direct connection test (will fail due to CORS)
   const { data: connectionTest, isLoading: isTestingConnection } = useQuery({
     queryKey: ["zendesk-connection"],
     queryFn: () => zendeskApi.testConnection(),
     retry: false,
-    throwOnError: false, // Don't throw errors for CORS issues
-    staleTime: 30000, // Cache result for 30 seconds
-    refetchOnWindowFocus: false, // Don't refetch on window focus
+    throwOnError: false,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+    enabled: !liveConnectionTest?.success, // Only run if live connection failed
   });
 
   useEffect(() => {
@@ -40,10 +54,12 @@ export function useZendeskConnection() {
   }, [connectionTest?.success, isInitialized]);
 
   return {
-    isConnected: connectionTest?.success || false,
+    isConnected:
+      liveConnectionTest?.success || connectionTest?.success || false,
     isInitialized,
-    isTestingConnection,
-    connectionMessage: connectionTest?.message,
+    isLiveConnection,
+    isTestingConnection: isTestingLive || isTestingConnection,
+    connectionMessage: liveConnectionTest?.message || connectionTest?.message,
   };
 }
 
@@ -55,10 +71,15 @@ export function useZendeskTickets(
     created_after?: string;
   } = {},
 ) {
+  const { isLiveConnection } = useZendeskConnection();
+
   return useQuery({
-    queryKey: ["zendesk-tickets", params],
-    queryFn: () => zendeskApi.fetchTickets(params),
-    enabled: true, // Will be enabled when connection is established
+    queryKey: ["zendesk-tickets", params, isLiveConnection],
+    queryFn: () =>
+      isLiveConnection
+        ? zendeskApiLive.fetchTickets(params)
+        : zendeskApi.fetchTickets(params),
+    enabled: true,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
@@ -85,17 +106,27 @@ export function useZendeskAnalytics(dateRange?: {
   start: string;
   end: string;
 }) {
+  const { isLiveConnection } = useZendeskConnection();
+
   return useQuery({
-    queryKey: ["zendesk-analytics", dateRange],
-    queryFn: () => zendeskApi.getAnalytics(dateRange),
+    queryKey: ["zendesk-analytics", dateRange, isLiveConnection],
+    queryFn: () =>
+      isLiveConnection
+        ? zendeskApiLive.getAnalytics(dateRange)
+        : zendeskApi.getAnalytics(dateRange),
     staleTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 
 export function useZendeskDashboard() {
+  const { isLiveConnection } = useZendeskConnection();
+
   return useQuery({
-    queryKey: ["zendesk-dashboard"],
-    queryFn: () => zendeskApi.getDashboardStats(),
+    queryKey: ["zendesk-dashboard", isLiveConnection],
+    queryFn: () =>
+      isLiveConnection
+        ? zendeskApiLive.getDashboardStats()
+        : zendeskApi.getDashboardStats(),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchInterval: 5 * 60 * 1000, // Auto-refresh every 5 minutes
   });
@@ -103,6 +134,7 @@ export function useZendeskDashboard() {
 
 export function useUpdateTicketCES() {
   const queryClient = useQueryClient();
+  const { isLiveConnection } = useZendeskConnection();
 
   return useMutation({
     mutationFn: ({
@@ -111,7 +143,10 @@ export function useUpdateTicketCES() {
     }: {
       ticketId: string;
       cesScore: number;
-    }) => zendeskApi.updateTicketCES(ticketId, cesScore),
+    }) =>
+      isLiveConnection
+        ? zendeskApiLive.updateTicketCES(ticketId, cesScore)
+        : zendeskApi.updateTicketCES(ticketId, cesScore),
     onSuccess: (success, { ticketId, cesScore }) => {
       if (success) {
         toast.success(`CES score ${cesScore} updated for ticket #${ticketId}`);

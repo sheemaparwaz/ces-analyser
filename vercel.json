@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/zendesk.js": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/zendesk/(.*)",
+      "destination": "/api/zendesk?path=$1"
+    }
+  ]
+}
